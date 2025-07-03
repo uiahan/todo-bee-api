@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\PaymentController;
 use App\Http\Controllers\Api\SubtaskController;
 use App\Http\Controllers\Api\TaskController;
+use App\Http\Controllers\Api\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -25,9 +26,19 @@ Route::middleware('auth:sanctum')->group(function () {
 });
 
 Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/user/me', [UserController::class, 'me']);
+    Route::post('/user/update', [UserController::class, 'update']);
+    Route::delete('/user/delete-avatar', [UserController::class, 'deleteAvatar']);
+    Route::post ('/user/change-password', [UserController::class, 'changePassword']);
+});
+
+Route::middleware('auth:sanctum')->group(function () {
     Route::group(['prefix' => 'subtask', 'controller' => SubtaskController::class], function () {
         Route::get('/index/{task_id}', 'index');
         Route::post('/store', 'store');
+        Route::put('/update/{id}', 'update');
+        Route::put('/{id}/update-status', 'updateStatus');
+        Route::delete('/delete/{id}', 'destroy');
     });
 });
 

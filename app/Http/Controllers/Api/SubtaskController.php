@@ -23,30 +23,47 @@ class SubtaskController extends Controller
 
     public function store(Request $request)
     {
-        $validated = $request->validate([
+        $request->validate([
+            'task_id' => 'required|exists:tasks,id',
             'title' => 'required|string|max:255',
             'status' => 'required|in:pending,progress,done',
-            'task_id' => 'required|exists:tasks,id',
         ]);
 
-        $subtask = Subtask::create($validated);
+        $subtask = Subtask::create([
+            'task_id' => $request->task_id,
+            'title' => $request->title,
+            'status' => $request->status,
+        ]);
 
-        return response()->json(['message' => 'Subtask created', 'subtask' => $subtask]);
+        return response()->json(['message' => 'Subtask berhasil dibuat', 'subtask' => $subtask]);
     }
 
     public function update(Request $request, $id)
     {
-        $subtask = Subtask::findOrFail($id);
-
-        $validated = $request->validate([
-            'title' => 'sometimes|string|max:255',
-            'status' => 'sometimes|in:pending,progress,done',
+        $request->validate([
+            'title' => 'required|string|max:255',
         ]);
 
-        $subtask->update($validated);
+        $subtask = Subtask::findOrFail($id);
+        $subtask->title = $request->title;
+        $subtask->save();
 
-        return response()->json(['message' => 'Subtask updated', 'subtask' => $subtask]);
+        return response()->json(['message' => 'Subtask berhasil diperbarui', 'subtask' => $subtask]);
     }
+
+    public function updateStatus(Request $request, $id)
+    {
+        $request->validate([
+            'status' => 'required|in:pending,progress,done',
+        ]);
+
+        $subtask = Subtask::findOrFail($id);
+        $subtask->status = $request->status;
+        $subtask->save();
+
+        return response()->json(['message' => 'Status updated successfully']);
+    }
+
 
     public function destroy($id)
     {

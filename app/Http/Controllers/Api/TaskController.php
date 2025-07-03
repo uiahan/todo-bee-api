@@ -16,7 +16,7 @@ class TaskController extends Controller
         $task = Task::where('user_id', $user->id)->get();
 
         return response()->json([
-            'tasks' => $task
+            'task' => $task
         ]);
     }
 
@@ -53,7 +53,7 @@ class TaskController extends Controller
         $task->image_url = $task->image ? asset('storage/' . $task->image) : null;
 
         return response()->json([
-            'message' => 'Task berhasil ditambahkan.',
+            'message' => 'Todo berhasil ditambahkan.',
             'task'    => $task,
         ], 201);
     }
