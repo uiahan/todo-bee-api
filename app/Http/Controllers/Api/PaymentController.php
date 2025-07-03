@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Storage;
 use Midtrans\Snap;
+use Str;
 
 class PaymentController extends Controller
 {
@@ -24,7 +25,7 @@ class PaymentController extends Controller
                 'user_id' => $user->id,
                 'status' => 'pending',
                 'amount' => 50000,
-                'order_type' => 'premium', // bisa ganti jadi topup, dsb
+                'order_type' => 'premium',
             ]);
 
             \Midtrans\Config::$serverKey = env('MIDTRANS_SERVER_KEY');
@@ -76,7 +77,6 @@ class PaymentController extends Controller
                 $user->status = 'premium';
                 $user->save();
 
-                // Buat order (kalau belum)
                 $order = Order::create([
                     'user_id' => $user->id,
                     'status' => 'completed',
@@ -84,8 +84,7 @@ class PaymentController extends Controller
                     'order_type' => 'upgrade',
                 ]);
 
-                // Buat invoice
-                $invoiceNumber = 'INV-' . strtoupper(Str::random(8));
+                $invoiceNumber = 'INV-' . strtoupper(\Illuminate\Support\Str::random(8));
                 $invoice = Invoice::create([
                     'user_id' => $user->id,
                     'order_id' => $order->id,
@@ -94,7 +93,6 @@ class PaymentController extends Controller
                     'pdf_url' => '', // sementara kosong
                 ]);
 
-                // Generate PDF dan simpan ke storage
                 $pdf = Pdf::loadView('invoice', [
                     'invoice' => $invoice,
                     'user' => $user
@@ -103,7 +101,6 @@ class PaymentController extends Controller
                 $pdfPath = "invoices/{$invoiceNumber}.pdf";
                 Storage::disk('public')->put($pdfPath, $pdf->output());
 
-                // Update URL PDF
                 $invoice->pdf_url = asset('storage/' . $pdfPath);
                 $invoice->save();
             }
