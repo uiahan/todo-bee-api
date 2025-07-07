@@ -17,7 +17,8 @@ return new class extends Migration
             $table->string('image')->nullable();
             $table->string('video')->nullable();
             $table->string('description');
-            $table->string('deadline');
+            $table->enum('status', ['pending', 'done'])->default('pending');
+            $table->string('deadline')->nullable();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->timestamps();
         });

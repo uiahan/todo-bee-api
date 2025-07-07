@@ -22,6 +22,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/store', 'store');
         Route::put('/update/{id}', 'update');
         Route::delete('/delete/{id}', 'delete');
+        Route::put('/status/done/{id}', 'statusDone');
+        Route::put('/status/pending/{id}', 'statusPending');
     });
 });
 
@@ -47,3 +49,4 @@ Route::middleware('auth:sanctum')->group(function () {
 });
 
 Route::post('/payment/callback', [PaymentController::class, 'midtransCallback']);
+Route::get('/invoice/download/{snap_order_id}', [PaymentController::class, 'downloadInvoice']);

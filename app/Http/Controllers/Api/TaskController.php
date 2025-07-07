@@ -25,7 +25,7 @@ class TaskController extends Controller
         $validator = Validator::make($request->all(), [
             'title'       => 'required|string|max:255',
             'description' => 'required|string',
-            'deadline'    => 'required|date',
+            'deadline'    => 'nullable|date',
             'image'       => 'nullable|image|max:2048',
             'video'       => 'nullable|string',
         ]);
@@ -112,5 +112,25 @@ class TaskController extends Controller
         $task->delete();
 
         return response()->json(['message' => 'Task berhasil dihapus.']);
+    }
+
+    public function statusDone($id) {
+        $task = Task::findOrFail($id);
+        $task->status = "done";
+        $task->save();
+
+        return response()->json([
+            'message' => 'Status berhasil di update'
+        ]);
+    }
+
+    public function statusPending($id) {
+        $task = Task::findOrFail($id);
+        $task->status = "pending";
+        $task->save();
+
+        return response()->json([
+            'message' => 'Status berhasil di update'
+        ]);
     }
 }
